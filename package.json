@@ -6,6 +6,8 @@
   "scripts": {
     "start": "npm run dev",
     "build": "tsc && vite build",
+    "build:ghpages": "tsc && vite build --base /robot/",
+    "preview": "vite preview",
     "dev": "vite"
   },
   "dependencies": {
