@@ -7,6 +7,8 @@
     "start": "npm run dev",
     "build": "tsc && vite build",
     "build:ghpages": "tsc && vite build --base /robot/",
+    "lint": "biome check",
+    "format": "biome format --write",
     "preview": "vite preview",
     "dev": "vite"
   },
@@ -14,6 +16,7 @@
     "pixi.js": "^8.8.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.0.0-beta.6",
     "@eslint/js": "^9.21.0",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.2",

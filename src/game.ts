@@ -1,13 +1,13 @@
 import { Application } from "pixi.js";
+import { COLORS, GAME_CONFIG } from "./config";
 import { Player } from "./entities/player";
-import { PlatformSystem, platformGrid } from "./systems/platform.system";
-import { EnergySystem } from "./systems/energy.system";
-import { EnemySystem } from "./systems/enemy.system";
-import { BulletSystem } from "./systems/bullet.system";
-import { CollisionSystem } from "./systems/collision.system";
 import { InputManager } from "./input.manager";
 import { Renderer } from "./renderer";
-import { GAME_CONFIG, COLORS } from "./config";
+import { BulletSystem } from "./systems/bullet.system";
+import { CollisionSystem } from "./systems/collision.system";
+import { EnemySystem } from "./systems/enemy.system";
+import { EnergySystem } from "./systems/energy.system";
+import { PlatformSystem, platformGrid } from "./systems/platform.system";
 
 export class Game {
   private app: Application;
@@ -19,8 +19,8 @@ export class Game {
   private collisionSystem: CollisionSystem;
   private inputManager: InputManager;
   private renderer: Renderer;
-  private enemyCollisionCooldown: number = 0; // Cooldown timer for enemy collisions
-  private shootCooldown: number = 0; // Cooldown timer for shooting
+  private enemyCollisionCooldown = 0; // Cooldown timer for enemy collisions
+  private shootCooldown = 0; // Cooldown timer for shooting
 
   constructor() {
     this.app = new Application();
@@ -49,7 +49,10 @@ export class Game {
     });
 
     // Setup DOM
-    const container = document.getElementById("pixi-container")!;
+    const container = document.getElementById("pixi-container");
+    if (!container) {
+      throw new Error("pixi-container element not found");
+    }
     container.appendChild(this.app.canvas);
 
     // Setup scaling
@@ -78,7 +81,7 @@ export class Game {
     this.inputManager.onKeyDown("Enter", () => this.resetGame());
   }
 
-  private gameLoop(time: any): void {
+  private gameLoop(time: { deltaTime: number }): void {
     const deltaTime = time.deltaTime;
     let isMoving = false;
 
@@ -151,7 +154,7 @@ export class Game {
 
     // Check bullet-enemy collisions
     const hitEnemies = this.bulletSystem.checkEnemyCollisions(
-      this.enemySystem.getEnemies()
+      this.enemySystem.getEnemies(),
     );
     if (hitEnemies.length > 0) {
       this.enemySystem.removeEnemies(hitEnemies);

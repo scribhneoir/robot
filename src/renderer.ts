@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
-import { PlatformSystem } from "./systems/platform.system";
-import { GAME_CONFIG, COLORS } from "./config";
+import { COLORS, GAME_CONFIG } from "./config";
+import type { PlatformSystem } from "./systems/platform.system";
 
 export class Renderer {
   private platformsContainer: Graphics;
@@ -26,7 +26,7 @@ export class Renderer {
             x * tileSize,
             y * tileSize,
             tileSize,
-            tileSize
+            tileSize,
           );
           this.platformsContainer.fill(COLORS.platform);
         }

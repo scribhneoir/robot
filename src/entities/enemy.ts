@@ -1,7 +1,7 @@
 import { Graphics } from "pixi.js";
-import { Vector2 } from "../types";
-import { GAME_CONFIG, COLORS } from "../config";
-import { PlatformSystem } from "../systems/platform.system";
+import { COLORS, GAME_CONFIG } from "../config";
+import type { PlatformSystem } from "../systems/platform.system";
+import type { Vector2 } from "../types";
 
 export interface EnemyPhysics {
   velocity: Vector2;
@@ -15,7 +15,7 @@ export class Enemy {
   private position: Vector2;
   private physics: EnemyPhysics;
   private platformSystem: PlatformSystem;
-  private size: number = 6; // Enemy size
+  private size = 6; // Enemy size
 
   constructor(x: number, y: number, platformSystem: PlatformSystem) {
     this.position = { x, y };
@@ -105,13 +105,13 @@ export class Enemy {
     // Check if there's still ground beneath the next position
     const hasGroundAhead = this.platformSystem.isPlatformAt(
       checkGridX,
-      currentGroundY
+      currentGroundY,
     );
 
     // Check if there's a wall ahead at the same level
     const hasWallAhead = this.platformSystem.isPlatformAt(
       checkGridX,
-      currentGroundY - 1
+      currentGroundY - 1,
     );
 
     // Special case: if we're on the screen bottom (ground level), don't fall off
@@ -186,10 +186,7 @@ export class Enemy {
   }
 
   // Check collision with player (for game over logic)
-  checkCollisionWithPlayer(
-    playerPos: Vector2,
-    playerSize: number = 8
-  ): boolean {
+  checkCollisionWithPlayer(playerPos: Vector2, playerSize = 8): boolean {
     return (
       this.position.x < playerPos.x + playerSize &&
       this.position.x + this.size > playerPos.x &&

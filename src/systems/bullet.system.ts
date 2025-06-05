@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import { Bullet } from "../entities/bullet";
-import { Vector2 } from "../types";
-import { Enemy } from "../entities/enemy";
+import type { Enemy } from "../entities/enemy";
+import type { Vector2 } from "../types";
 
 export class BulletSystem {
   private bullets: Bullet[] = [];

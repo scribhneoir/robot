@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
-import { Vector2 } from "../types";
-import { GAME_CONFIG, COLORS } from "../config";
+import { COLORS, GAME_CONFIG } from "../config";
+import type { Vector2 } from "../types";
 
 export interface BulletPhysics {
   velocity: Vector2;
@@ -11,8 +11,8 @@ export class Bullet {
   private graphics: Graphics;
   private position: Vector2;
   private physics: BulletPhysics;
-  private size: number = 2;
-  private active: boolean = true;
+  private size = 2;
+  private active = true;
 
   constructor(x: number, y: number, direction: "left" | "right") {
     this.position = { x, y };

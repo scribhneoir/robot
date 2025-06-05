@@ -1,13 +1,13 @@
 import { Graphics } from "pixi.js";
-import { Vector2, Physics } from "../types";
-import { PHYSICS_CONFIG, COLORS } from "../config";
+import { COLORS, PHYSICS_CONFIG } from "../config";
+import type { Physics, Vector2 } from "../types";
 
 export class Player {
   private graphics: Graphics;
   private position: Vector2;
   private physics: Physics;
   private spawnPosition: Vector2;
-  private isBlinking: boolean = false;
+  private isBlinking = false;
   private facingDirection: "left" | "right" = "right"; // Track facing direction
 
   constructor(spawnX: number, spawnY: number) {
@@ -73,11 +73,11 @@ export class Player {
     // Limit maximum speed
     this.physics.velocity.x = Math.max(
       -this.physics.maxSpeed,
-      Math.min(this.physics.maxSpeed, this.physics.velocity.x)
+      Math.min(this.physics.maxSpeed, this.physics.velocity.x),
     );
     this.physics.velocity.y = Math.max(
       PHYSICS_CONFIG.maxUpwardVelocity,
-      Math.min(PHYSICS_CONFIG.maxDownwardVelocity, this.physics.velocity.y)
+      Math.min(PHYSICS_CONFIG.maxDownwardVelocity, this.physics.velocity.y),
     );
 
     // Update position based on velocity
@@ -103,7 +103,7 @@ export class Player {
       this.physics.isCharging = true;
       this.physics.chargeTime = Math.min(
         this.physics.chargeTime + deltaTime,
-        this.physics.maxChargeTime
+        this.physics.maxChargeTime,
       );
     }
   }

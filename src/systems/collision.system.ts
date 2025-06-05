@@ -1,7 +1,7 @@
-import { Player } from "../entities/player";
-import { PlatformSystem } from "./platform.system";
 import { GAME_CONFIG } from "../config";
-import { Vector2 } from "../types";
+import type { Player } from "../entities/player";
+import type { Vector2 } from "../types";
+import type { PlatformSystem } from "./platform.system";
 
 interface CollisionResult {
   position: Vector2;
@@ -103,7 +103,7 @@ export class CollisionSystem {
         this.platformSystem.isPlatformAt(rightGridX, playerGridY) ||
         this.platformSystem.isPlatformAt(
           rightGridX,
-          Math.floor((result.position.y + 7) / tileSize)
+          Math.floor((result.position.y + 7) / tileSize),
         )
       ) {
         const platformLeft = rightGridX * tileSize;
@@ -122,7 +122,7 @@ export class CollisionSystem {
         this.platformSystem.isPlatformAt(leftGridX, playerGridY) ||
         this.platformSystem.isPlatformAt(
           leftGridX,
-          Math.floor((result.position.y + 7) / tileSize)
+          Math.floor((result.position.y + 7) / tileSize),
         )
       ) {
         const platformRight = (leftGridX + 1) * tileSize;

@@ -1,4 +1,4 @@
-import { GameConfig } from "./types";
+import type { GameConfig } from "./types";
 
 export const GAME_CONFIG: GameConfig = {
   screen: {

@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
-import { Energy } from "../types";
-import { ENERGY_CONFIG, COLORS } from "../config";
+import { COLORS, ENERGY_CONFIG } from "../config";
+import type { Energy } from "../types";
 
 export class EnergySystem {
   private energy: Energy;
@@ -65,7 +65,7 @@ export class EnergySystem {
   private clampEnergy(): void {
     this.energy.current = Math.max(
       0,
-      Math.min(this.energy.max, this.energy.current)
+      Math.min(this.energy.max, this.energy.current),
     );
   }
 

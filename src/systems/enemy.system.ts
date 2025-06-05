@@ -1,8 +1,8 @@
 import { Container } from "pixi.js";
-import { Enemy } from "../entities/enemy";
-import { PlatformSystem, platformGrid } from "./platform.system";
 import { GAME_CONFIG } from "../config";
-import { Vector2 } from "../types";
+import { Enemy } from "../entities/enemy";
+import type { Vector2 } from "../types";
+import { type PlatformSystem, platformGrid } from "./platform.system";
 
 export class EnemySystem {
   private enemies: Enemy[] = [];
@@ -26,7 +26,7 @@ export class EnemySystem {
           const spawnY = y * tileSize;
 
           console.log(
-            `Spawning enemy at (${spawnX}, ${spawnY}) at grid position (${x}, ${y})`
+            `Spawning enemy at (${spawnX}, ${spawnY}) at grid position (${x}, ${y})`,
           );
           const enemy = new Enemy(spawnX, spawnY, this.platformSystem);
           this.enemies.push(enemy);
@@ -47,7 +47,7 @@ export class EnemySystem {
     }
   }
 
-  checkPlayerCollisions(playerPos: Vector2, playerSize: number = 8): boolean {
+  checkPlayerCollisions(playerPos: Vector2, playerSize = 8): boolean {
     for (const enemy of this.enemies) {
       if (enemy.checkCollisionWithPlayer(playerPos, playerSize)) {
         return true;
