@@ -83,6 +83,12 @@ export class Enemy {
     // Calculate the next position we would move to
     const nextX = this.position.x + this.physics.velocity.x * 2; // Look ahead a bit more
 
+    // Check screen boundaries first
+    if (nextX <= 0 || nextX + this.size >= GAME_CONFIG.screen.width) {
+      this.physics.direction *= -1;
+      return;
+    }
+
     // Check the ground tile beneath where we would be
     let checkGridX: number;
     if (this.physics.direction === 1) {
@@ -108,14 +114,20 @@ export class Enemy {
       currentGroundY - 1
     );
 
-    // Turn around if there's no ground ahead or there's a wall
-    if (!hasGroundAhead || hasWallAhead) {
-      this.physics.direction *= -1;
-    }
+    // Special case: if we're on the screen bottom (ground level), don't fall off
+    const isOnScreenBottom =
+      this.position.y + this.size >= GAME_CONFIG.screen.height - 1;
 
-    // Also check screen boundaries
-    if (nextX <= 0 || nextX + this.size >= GAME_CONFIG.screen.width) {
-      this.physics.direction *= -1;
+    if (isOnScreenBottom) {
+      // On screen bottom - only check for walls, not ground beneath
+      if (hasWallAhead) {
+        this.physics.direction *= -1;
+      }
+    } else {
+      // On a platform - check for both ground ahead and walls
+      if (!hasGroundAhead || hasWallAhead) {
+        this.physics.direction *= -1;
+      }
     }
   }
 
