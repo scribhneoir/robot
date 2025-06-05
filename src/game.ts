@@ -17,6 +17,7 @@ export class Game {
   private collisionSystem: CollisionSystem;
   private inputManager: InputManager;
   private renderer: Renderer;
+  private enemyCollisionCooldown: number = 0; // Cooldown timer for enemy collisions
 
   constructor() {
     this.app = new Application();
@@ -124,9 +125,25 @@ export class Game {
     this.collisionSystem.checkCollisions(this.player);
     this.enemySystem.update(deltaTime);
 
+    // Update enemy collision cooldown
+    if (this.enemyCollisionCooldown > 0) {
+      this.enemyCollisionCooldown -= deltaTime; // Approximate milliseconds per frame
+    }
+
+    // Set player blinking state based on cooldown
+    this.player.setBlinking(this.enemyCollisionCooldown > 0);
+
     // Check player-enemy collisions
     if (this.enemySystem.checkPlayerCollisions(this.player.getPosition())) {
-      this.resetGame(); // Reset game if player hits enemy
+      if (this.enemyCollisionCooldown <= 0) {
+        if (this.energySystem.consumeEnemyCollision()) {
+          // Energy consumed successfully, set cooldown to prevent rapid energy loss
+          this.enemyCollisionCooldown = 120; // Cooldown in frames (about 1 second at 60fps)
+        } else {
+          // No energy left, reset the game
+          this.resetGame();
+        }
+      }
     }
 
     this.player.updateVisual();
@@ -137,6 +154,7 @@ export class Game {
     this.player.reset();
     this.energySystem.reset();
     this.enemySystem.reset();
+    this.enemyCollisionCooldown = 0; // Reset cooldown timer
   }
 
   getApp(): Application {

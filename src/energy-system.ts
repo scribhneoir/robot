@@ -43,6 +43,13 @@ export class EnergySystem {
     return this.energy.current > 0;
   }
 
+  consumeEnemyCollision(): boolean {
+    if (this.energy.current <= 0) return false;
+    this.energy.current -= ENERGY_CONFIG.costs.enemyCollision;
+    this.clampEnergy();
+    return this.energy.current > 0;
+  }
+
   reset(): void {
     this.energy.current = this.energy.max;
     this.updateVisual();

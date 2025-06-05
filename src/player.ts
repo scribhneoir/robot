@@ -7,6 +7,7 @@ export class Player {
   private position: Vector2;
   private physics: Physics;
   private spawnPosition: Vector2;
+  private isBlinking: boolean = false;
 
   constructor(spawnX: number, spawnY: number) {
     this.spawnPosition = { x: spawnX, y: spawnY };
@@ -128,12 +129,17 @@ export class Player {
     this.physics.velocity.y = y;
   }
 
+  setBlinking(isBlinking: boolean): void {
+    this.isBlinking = isBlinking;
+  }
+
   reset(): void {
     this.position = { ...this.spawnPosition };
     this.physics.velocity = { x: 0, y: 0 };
     this.physics.onGround = false;
     this.physics.chargeTime = 0;
     this.physics.isCharging = false;
+    this.isBlinking = false;
     this.setPosition(this.spawnPosition.x, this.spawnPosition.y);
     this.updateVisual();
   }
@@ -164,5 +170,17 @@ export class Player {
     }
 
     this.graphics.fill(color);
+
+    // Apply blinking effect by changing alpha
+    if (this.isBlinking) {
+      // Use sin wave to create smooth blinking effect
+      const blinkFrequency = 8; // Blinks per second
+      const time = Date.now() / 1000; // Current time in seconds
+      const alpha =
+        0.3 + (0.7 * (Math.sin(time * Math.PI * blinkFrequency) + 1)) / 2;
+      this.graphics.alpha = alpha;
+    } else {
+      this.graphics.alpha = 1.0;
+    }
   }
 }
