@@ -24,7 +24,7 @@ export const ENERGY_CONFIG = {
   costs: {
     movement: 0.05,
     charging: 0.1,
-    enemyCollision: 0.2,
+    enemyCollision: 10,
   },
 };
 
