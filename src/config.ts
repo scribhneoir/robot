@@ -6,6 +6,7 @@ export const GAME_CONFIG: GameConfig = {
     height: 144,
   },
   tileSize: 8,
+  enemyCollisionCooldown: 60, // Cooldown in frames for enemy collisions
 };
 
 export const PHYSICS_CONFIG = {

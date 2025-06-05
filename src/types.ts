@@ -32,6 +32,7 @@ export interface GameConfig {
     height: number;
   };
   tileSize: number;
+  enemyCollisionCooldown: number; // Cooldown in frames for enemy collisions
 }
 
 export type PlatformGrid = number[][];

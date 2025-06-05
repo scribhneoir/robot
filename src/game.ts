@@ -138,7 +138,7 @@ export class Game {
       if (this.enemyCollisionCooldown <= 0) {
         if (this.energySystem.consumeEnemyCollision()) {
           // Energy consumed successfully, set cooldown to prevent rapid energy loss
-          this.enemyCollisionCooldown = 120; // Cooldown in frames (about 1 second at 60fps)
+          this.enemyCollisionCooldown = GAME_CONFIG.enemyCollisionCooldown; // Cooldown in frames (about 1 second at 60fps)
         } else {
           // No energy left, reset the game
           this.resetGame();
