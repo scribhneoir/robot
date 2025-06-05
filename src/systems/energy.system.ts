@@ -73,13 +73,12 @@ export class EnergySystem {
     this.graphics.clear();
 
     // Background (empty bar)
-    this.graphics.rect(5, 5, 100, 6);
-    this.graphics.fill(COLORS.energy.background);
+    const barWidth = 160 - 50;
 
     // Energy fill
-    const fillWidth = (this.energy.current / this.energy.max) * 100;
+    const fillWidth = (this.energy.current / this.energy.max) * barWidth;
     if (fillWidth > 0) {
-      this.graphics.rect(5, 5, fillWidth, 6);
+      this.graphics.rect(5, 5, fillWidth, 8);
 
       // Color based on energy level
       let barColor = COLORS.energy.high;
@@ -92,7 +91,7 @@ export class EnergySystem {
     }
 
     // Border
-    this.graphics.rect(4, 4, 102, 8);
+    this.graphics.rect(5, 5, barWidth, 8);
     this.graphics.stroke({ color: COLORS.energy.border, width: 1 });
   }
 }
