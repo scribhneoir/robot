@@ -1,7 +1,7 @@
 import { Graphics } from "pixi.js";
-import { Vector2 } from "./types";
-import { GAME_CONFIG, COLORS } from "./config";
-import { PlatformSystem } from "./platform-system";
+import { Vector2 } from "../types";
+import { GAME_CONFIG, COLORS } from "../config";
+import { PlatformSystem } from "../systems/platform.system";
 
 export interface EnemyPhysics {
   velocity: Vector2;

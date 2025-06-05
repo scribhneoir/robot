@@ -1,5 +1,5 @@
-import { PlatformGrid } from "./types";
-import { GAME_CONFIG } from "./config";
+import { PlatformGrid } from "../types";
+import { GAME_CONFIG } from "../config";
 
 // 2D array to store platform data (0 = empty, 1 = platform, -1 = spawn, -2 = enemy)
 export const platformGrid: PlatformGrid = [

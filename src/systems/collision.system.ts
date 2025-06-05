@@ -1,7 +1,7 @@
-import { Player } from "./player";
-import { PlatformSystem } from "./platform-system";
-import { GAME_CONFIG } from "./config";
-import { Vector2 } from "./types";
+import { Player } from "../entities/player";
+import { PlatformSystem } from "./platform.system";
+import { GAME_CONFIG } from "../config";
+import { Vector2 } from "../types";
 
 interface CollisionResult {
   position: Vector2;

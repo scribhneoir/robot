@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
-import { Energy } from "./types";
-import { ENERGY_CONFIG, COLORS } from "./config";
+import { Energy } from "../types";
+import { ENERGY_CONFIG, COLORS } from "../config";
 
 export class EnergySystem {
   private energy: Energy;

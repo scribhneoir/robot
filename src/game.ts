@@ -1,11 +1,11 @@
 import { Application } from "pixi.js";
-import { Player } from "./player";
-import { PlatformSystem, platformGrid } from "./platform-system";
-import { EnergySystem } from "./energy-system";
-import { EnemySystem } from "./enemy-system";
-import { BulletSystem } from "./bullet-system";
-import { CollisionSystem } from "./collision-system";
-import { InputManager } from "./input-manager";
+import { Player } from "./entities/player";
+import { PlatformSystem, platformGrid } from "./systems/platform.system";
+import { EnergySystem } from "./systems/energy.system";
+import { EnemySystem } from "./systems/enemy.system";
+import { BulletSystem } from "./systems/bullet.system";
+import { CollisionSystem } from "./systems/collision.system";
+import { InputManager } from "./input.manager";
 import { Renderer } from "./renderer";
 import { GAME_CONFIG, COLORS } from "./config";
 

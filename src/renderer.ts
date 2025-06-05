@@ -1,5 +1,5 @@
 import { Graphics } from "pixi.js";
-import { PlatformSystem } from "./platform-system";
+import { PlatformSystem } from "./systems/platform.system";
 import { GAME_CONFIG, COLORS } from "./config";
 
 export class Renderer {

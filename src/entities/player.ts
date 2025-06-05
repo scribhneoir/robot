@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
-import { Vector2, Physics } from "./types";
-import { PHYSICS_CONFIG, COLORS } from "./config";
+import { Vector2, Physics } from "../types";
+import { PHYSICS_CONFIG, COLORS } from "../config";
 
 export class Player {
   private graphics: Graphics;

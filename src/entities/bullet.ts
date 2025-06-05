@@ -1,6 +1,6 @@
 import { Graphics } from "pixi.js";
-import { Vector2 } from "./types";
-import { GAME_CONFIG, COLORS } from "./config";
+import { Vector2 } from "../types";
+import { GAME_CONFIG, COLORS } from "../config";
 
 export interface BulletPhysics {
   velocity: Vector2;

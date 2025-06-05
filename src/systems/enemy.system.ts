@@ -1,8 +1,8 @@
 import { Container } from "pixi.js";
-import { Enemy } from "./enemy";
-import { PlatformSystem, platformGrid } from "./platform-system";
-import { GAME_CONFIG } from "./config";
-import { Vector2 } from "./types";
+import { Enemy } from "../entities/enemy";
+import { PlatformSystem, platformGrid } from "./platform.system";
+import { GAME_CONFIG } from "../config";
+import { Vector2 } from "../types";
 
 export class EnemySystem {
   private enemies: Enemy[] = [];
