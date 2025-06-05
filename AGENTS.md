@@ -52,12 +52,9 @@ pnpm test -- --coverage
 ## Programmatic Checks
 
 ```bash
-# Lint check for OpenAI Codex code
+pnpm run format
+
 pnpm run lint
 
-# Type check for OpenAI Codex TypeScript
 pnpm run typecheck
-
-# Build check for OpenAI Codex implementations
-pnpm run build
 ```

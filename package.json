@@ -7,7 +7,7 @@
     "start": "npm run dev",
     "build": "tsc && vite build",
     "build:ghpages": "tsc && vite build --base /robot/",
-    "lint": "biome check",
+    "lint": "biome check --write",
     "format": "biome format --write",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
