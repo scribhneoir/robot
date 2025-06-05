@@ -56,7 +56,7 @@ pnpm test -- --coverage
 pnpm run lint
 
 # Type check for OpenAI Codex TypeScript
-pnpm run type-check
+pnpm run typecheck
 
 # Build check for OpenAI Codex implementations
 pnpm run build

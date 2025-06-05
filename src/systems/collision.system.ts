@@ -75,9 +75,16 @@ export class CollisionSystem {
         ) {
           result.onGround = false;
         } else if (standingOnPlatform) {
-          // Snap to platform top if we're close enough
+          // Snap to platform top if we're close enough or falling through
           const platformTop = checkY * tileSize;
-          if (Math.abs(result.position.y + 8 - platformTop) < 2) {
+          const playerBottom = result.position.y + 8;
+
+          // Check if player is close enough to platform top, or if they would have
+          // passed through the platform in this frame (prevents fall-through)
+          if (
+            playerBottom >= platformTop &&
+            playerBottom <= platformTop + Math.abs(result.velocity.y) + 2
+          ) {
             result.position.y = platformTop - 8;
             result.onGround = true;
           }
