@@ -2,6 +2,7 @@ import { Graphics } from "pixi.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { COLORS, ENERGY_CONFIG } from "../../config";
 import { EnergySystem } from "../energy.system";
+import { ToolType } from "../tool.system";
 
 // Mock PIXI.js Graphics
 vi.mock("pixi.js", () => ({
@@ -211,44 +212,44 @@ describe("EnergySystem", () => {
     });
   });
 
-  describe("consumeShooting", () => {
+  describe("consumeTool with Blaster", () => {
     it("should consume shooting energy when sufficient energy available", () => {
       const initialEnergy = energySystem.getCurrent();
-      const result = energySystem.consumeShooting();
+      const result = energySystem.consumeTool(ToolType.Blaster);
 
       expect(result).toBe(true);
       expect(energySystem.getCurrent()).toBe(
-        initialEnergy - ENERGY_CONFIG.costs.shooting,
+        initialEnergy - ENERGY_CONFIG.costs.tool[ToolType.Blaster],
       );
     });
 
     it("should return false when energy is less than shooting cost", () => {
       // Drain energy to less than shooting cost
-      const shootingCost = ENERGY_CONFIG.costs.shooting;
+      const shootingCost = ENERGY_CONFIG.costs.tool[ToolType.Blaster];
       while (energySystem.getCurrent() >= shootingCost) {
-        energySystem.consumeShooting();
+        energySystem.consumeTool(ToolType.Blaster);
       }
 
-      const result = energySystem.consumeShooting();
+      const result = energySystem.consumeTool(ToolType.Blaster);
       expect(result).toBe(false);
     });
 
     it("should not consume energy when insufficient", () => {
       // Drain energy to less than shooting cost
-      const shootingCost = ENERGY_CONFIG.costs.shooting;
+      const shootingCost = ENERGY_CONFIG.costs.tool[ToolType.Blaster];
       while (energySystem.getCurrent() >= shootingCost) {
-        energySystem.consumeShooting();
+        energySystem.consumeTool(ToolType.Blaster);
       }
 
       const energyBeforeAttempt = energySystem.getCurrent();
-      energySystem.consumeShooting();
+      energySystem.consumeTool(ToolType.Blaster);
 
       expect(energySystem.getCurrent()).toBe(energyBeforeAttempt);
     });
 
     it("should handle edge case when energy equals shooting cost", () => {
       // Set energy to exactly the shooting cost
-      const shootingCost = ENERGY_CONFIG.costs.shooting;
+      const shootingCost = ENERGY_CONFIG.costs.tool[ToolType.Blaster];
 
       // Reset and manually set energy to shooting cost
       energySystem.reset();
@@ -270,7 +271,7 @@ describe("EnergySystem", () => {
         energySystem.consumeMovement(movementTime);
       }
 
-      const result = energySystem.consumeShooting();
+      const result = energySystem.consumeTool(ToolType.Blaster);
       expect(result).toBe(true);
       expect(energySystem.getCurrent()).toBe(0);
     });
@@ -314,8 +315,11 @@ describe("EnergySystem", () => {
     it("should draw background bar", () => {
       energySystem.updateVisual();
 
-      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, 100, 6);
-      expect(mockGraphics.fill).toHaveBeenCalledWith(COLORS.energy.background);
+      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, 110, 8);
+      expect(mockGraphics.stroke).toHaveBeenCalledWith({
+        color: COLORS.energy.border,
+        width: 1,
+      });
     });
 
     it("should draw energy fill when energy is above zero", () => {
@@ -326,12 +330,12 @@ describe("EnergySystem", () => {
       energySystem.updateVisual();
 
       const expectedFillWidth =
-        (energySystem.getCurrent() / energySystem.getMax()) * 100;
+        (energySystem.getCurrent() / energySystem.getMax()) * 110;
       expect(mockGraphics.rect).toHaveBeenCalledWith(
         5,
         5,
         expectedFillWidth,
-        6,
+        8,
       );
     });
 
@@ -344,10 +348,32 @@ describe("EnergySystem", () => {
 
       energySystem.updateVisual();
 
-      // Should only have background rect and border rect calls
-      expect(mockGraphics.rect).toHaveBeenCalledTimes(2);
-      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, 100, 6); // background
-      expect(mockGraphics.rect).toHaveBeenCalledWith(4, 4, 102, 8); // border
+      // Should only have border rect call (no fill rect when energy is 0)
+      expect(mockGraphics.rect).toHaveBeenCalledTimes(1);
+      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, 110, 8); // border
+    });
+
+    it("should draw border", () => {
+      energySystem.updateVisual();
+
+      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, 110, 8);
+      expect(mockGraphics.stroke).toHaveBeenCalledWith({
+        color: COLORS.energy.border,
+        width: 1,
+      });
+    });
+
+    it("should calculate correct fill width based on energy percentage", () => {
+      // Consume some energy to test percentage calculation
+      energySystem.consumeMovement(1);
+      const energyPercentage =
+        energySystem.getCurrent() / energySystem.getMax();
+      const expectedWidth = energyPercentage * 110;
+
+      vi.clearAllMocks();
+      energySystem.updateVisual();
+
+      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, expectedWidth, 8);
     });
 
     it("should use high energy color when energy is above 60", () => {
@@ -391,7 +417,7 @@ describe("EnergySystem", () => {
     it("should draw border", () => {
       energySystem.updateVisual();
 
-      expect(mockGraphics.rect).toHaveBeenCalledWith(4, 4, 102, 8);
+      expect(mockGraphics.rect).toHaveBeenCalledWith(5, 5, 110, 8);
       expect(mockGraphics.stroke).toHaveBeenCalledWith({
         color: COLORS.energy.border,
         width: 1,
@@ -418,14 +444,14 @@ describe("EnergySystem", () => {
         (call) =>
           call[0] === 5 &&
           call[1] === 5 &&
-          call[3] === 6 &&
+          call[3] === 8 &&
           call[2] > 0 &&
-          call[2] < 100,
+          call[2] < 110,
       );
 
       expect(fillCall).toBeDefined();
       if (fillCall) {
-        expect(fillCall[2]).toBeCloseTo(50, 1); // Allow for floating point precision
+        expect(fillCall[2]).toBeCloseTo(55, 1); // 50% of 110 = 55
       }
     });
   });
@@ -465,7 +491,7 @@ describe("EnergySystem", () => {
       energySystem.consumeCharging(1);
       const afterCharging = energySystem.getCurrent();
 
-      energySystem.consumeShooting();
+      energySystem.consumeTool(ToolType.Blaster);
       const afterShooting = energySystem.getCurrent();
 
       energySystem.consumeEnemyCollision();
@@ -477,7 +503,7 @@ describe("EnergySystem", () => {
       const expectedAfterCharging =
         expectedAfterMovement - ENERGY_CONFIG.costs.charging * 1;
       const expectedAfterShooting =
-        expectedAfterCharging - ENERGY_CONFIG.costs.shooting;
+        expectedAfterCharging - ENERGY_CONFIG.costs.tool[ToolType.Blaster];
       const expectedAfterCollision =
         expectedAfterShooting - ENERGY_CONFIG.costs.enemyCollision;
 
