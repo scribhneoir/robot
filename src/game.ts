@@ -21,6 +21,8 @@ export class Game {
   private renderer: Renderer;
   private enemyCollisionCooldown = 0; // Cooldown timer for enemy collisions
   private toolConfigElement: HTMLElement | null = null;
+  private gameOverOverlay: HTMLElement | null = null;
+  private isGameOver = false;
 
   constructor() {
     this.app = new Application();
@@ -75,6 +77,9 @@ export class Game {
 
     // Setup tool configuration display
     this.setupToolConfigDisplay();
+
+    // Setup game over overlay
+    this.setupGameOverOverlay();
 
     // Start game loop
     this.app.ticker.add((time) => this.gameLoop(time));
@@ -140,8 +145,64 @@ export class Game {
     }
   }
 
+  private setupGameOverOverlay(): void {
+    this.gameOverOverlay = document.createElement("div");
+    this.gameOverOverlay.id = "game-over-overlay";
+    this.gameOverOverlay.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      font-family: monospace;
+      color: white;
+      text-align: center;
+    `;
+
+    this.gameOverOverlay.innerHTML = `
+      <div>
+        <h2 style="margin: 0 0 20px 0; font-size: 24px; color: #ff0000;">GAME OVER</h2>
+        <p style="margin: 0 0 10px 0; font-size: 16px;">Energy Depleted!</p>
+        <p style="margin: 0; font-size: 14px; color: #cccccc;">Press ENTER to restart</p>
+      </div>
+    `;
+
+    document.body.appendChild(this.gameOverOverlay);
+  }
+
+  private showGameOverOverlay(): void {
+    if (this.gameOverOverlay) {
+      this.gameOverOverlay.style.display = "flex";
+    }
+    this.isGameOver = true;
+  }
+
+  private hideGameOverOverlay(): void {
+    if (this.gameOverOverlay) {
+      this.gameOverOverlay.style.display = "none";
+    }
+    this.isGameOver = false;
+  }
+
   private gameLoop(time: { deltaTime: number }): void {
     const deltaTime = time.deltaTime;
+
+    // Check for game over condition
+    if (!this.isGameOver && this.energySystem.getCurrent() <= 0) {
+      this.showGameOverOverlay();
+      return; // Stop game loop when game over
+    }
+
+    // Skip game logic if game is over
+    if (this.isGameOver) {
+      return;
+    }
+
     let isMoving = false;
 
     // Handle movement input
@@ -238,9 +299,6 @@ export class Game {
         if (this.energySystem.consumeEnemyCollision()) {
           // Energy consumed successfully, set cooldown to prevent rapid energy loss
           this.enemyCollisionCooldown = GAME_CONFIG.enemyCollisionCooldown; // Cooldown in frames (about 1 second at 60fps)
-        } else {
-          // No energy left, reset the game
-          this.resetGame();
         }
       }
     }
@@ -255,6 +313,7 @@ export class Game {
     this.enemySystem.reset();
     this.toolSystem.reset();
     this.enemyCollisionCooldown = 0; // Reset cooldown timer
+    this.hideGameOverOverlay(); // Hide game over overlay when restarting
   }
 
   getApp(): Application {
