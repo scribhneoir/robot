@@ -11,7 +11,7 @@ export const GAME_CONFIG: GameConfig = {
 
 export const PHYSICS_CONFIG = {
   acceleration: 0.7,
-  friction: 0.8,
+  friction: 0.5,
   gravity: 0.3,
   jumpPower: -2,
   maxSpeed: 2,

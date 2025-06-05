@@ -47,6 +47,7 @@ export class Game {
       resolution: 1,
       autoDensity: false,
     });
+    this.app.ticker.maxFPS = 30; // Set max FPS to 60
 
     // Setup DOM
     const container = document.getElementById("pixi-container");
