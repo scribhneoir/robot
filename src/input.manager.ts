@@ -56,6 +56,14 @@ export class InputManager {
     );
   }
 
+  isJToolPressed(): boolean {
+    return this.isKeyPressed("KeyJ") || this.touchControls.jtool;
+  }
+
+  isKToolPressed(): boolean {
+    return this.isKeyPressed("KeyK") || this.touchControls.ktool;
+  }
+
   onKeyDown(keyCode: string, callback: () => void): void {
     const event = `keydown:${keyCode}`;
     if (!this.callbacks[event]) {
@@ -93,8 +101,8 @@ export class InputManager {
         </div>
       </div>
       <div class="action-buttons">
-        <button class="action-btn shoot-btn" data-control="shoot">A</button>
-                <button class="action-btn shoot-btn" data-control="shoot">B</button>
+        <button class="action-btn shoot-btn" data-control="jtool">J</button>
+        <button class="action-btn shoot-btn" data-control="ktool">K</button>
       </div>
     `;
 

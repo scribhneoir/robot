@@ -1,3 +1,4 @@
+import { ToolType } from "./systems/tool.system";
 import type { GameConfig } from "./types";
 
 export const GAME_CONFIG: GameConfig = {
@@ -26,7 +27,10 @@ export const ENERGY_CONFIG = {
     movement: 0.05,
     charging: 0.1,
     enemyCollision: 10,
-    shooting: 5, // Energy cost per bullet
+    tool: {
+      [ToolType.None]: 0,
+      [ToolType.Blaster]: 5,
+    },
   },
 };
 

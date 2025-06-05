@@ -1,6 +1,7 @@
 import { Graphics } from "pixi.js";
 import { COLORS, ENERGY_CONFIG } from "../config";
 import type { Energy } from "../types";
+import type { ToolType } from "./tool.system";
 
 export class EnergySystem {
   private energy: Energy;
@@ -50,9 +51,9 @@ export class EnergySystem {
     return this.energy.current > 0;
   }
 
-  consumeShooting(): boolean {
-    if (this.energy.current < ENERGY_CONFIG.costs.shooting) return false;
-    this.energy.current -= ENERGY_CONFIG.costs.shooting;
+  consumeTool(tool: ToolType): boolean {
+    if (this.energy.current < ENERGY_CONFIG.costs.tool[tool]) return false;
+    this.energy.current -= ENERGY_CONFIG.costs.tool[tool];
     this.clampEnergy();
     return true;
   }

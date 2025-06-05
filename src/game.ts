@@ -3,11 +3,11 @@ import { COLORS, GAME_CONFIG } from "./config";
 import { Player } from "./entities/player";
 import { InputManager } from "./input.manager";
 import { Renderer } from "./renderer";
-import { BulletSystem } from "./systems/bullet.system";
 import { CollisionSystem } from "./systems/collision.system";
 import { EnemySystem } from "./systems/enemy.system";
 import { EnergySystem } from "./systems/energy.system";
 import { PlatformSystem, platformGrid } from "./systems/platform.system";
+import { ToolSystem } from "./systems/tool.system";
 
 export class Game {
   private app: Application;
@@ -15,12 +15,12 @@ export class Game {
   private platformSystem: PlatformSystem;
   private energySystem: EnergySystem;
   private enemySystem: EnemySystem;
-  private bulletSystem: BulletSystem;
+  private toolSystem: ToolSystem;
   private collisionSystem: CollisionSystem;
   private inputManager: InputManager;
   private renderer: Renderer;
   private enemyCollisionCooldown = 0; // Cooldown timer for enemy collisions
-  private shootCooldown = 0; // Cooldown timer for shooting
+  private toolConfigElement: HTMLElement | null = null;
 
   constructor() {
     this.app = new Application();
@@ -35,7 +35,7 @@ export class Game {
     this.energySystem = new EnergySystem();
     this.enemySystem = new EnemySystem(this.platformSystem);
     this.collisionSystem = new CollisionSystem(this.platformSystem);
-    this.bulletSystem = new BulletSystem();
+    this.toolSystem = new ToolSystem();
   }
 
   async init(): Promise<void> {
@@ -65,13 +65,16 @@ export class Game {
     this.app.stage.addChild(this.renderer.getPlatformsContainer());
     this.app.stage.addChild(this.energySystem.getGraphics());
     this.app.stage.addChild(this.enemySystem.getContainer());
-    this.app.stage.addChild(this.bulletSystem.getContainer());
+    this.app.stage.addChild(this.toolSystem.getContainer());
 
     // Render platforms
     this.renderer.renderPlatforms(this.platformSystem);
 
     // Setup input handlers
     this.setupInputHandlers();
+
+    // Setup tool configuration display
+    this.setupToolConfigDisplay();
 
     // Start game loop
     this.app.ticker.add((time) => this.gameLoop(time));
@@ -80,6 +83,61 @@ export class Game {
   private setupInputHandlers(): void {
     // Reset game on Enter key
     this.inputManager.onKeyDown("Enter", () => this.resetGame());
+
+    // Tool configuration shortcuts
+    this.inputManager.onKeyDown("Digit1", () => {
+      const config = this.toolSystem.getConfig();
+      config.jButton = "blaster";
+      this.toolSystem.setConfig(config);
+      this.updateToolConfigDisplay();
+    });
+
+    this.inputManager.onKeyDown("Digit2", () => {
+      const config = this.toolSystem.getConfig();
+      config.jButton = "none";
+      this.toolSystem.setConfig(config);
+      this.updateToolConfigDisplay();
+    });
+
+    this.inputManager.onKeyDown("Digit3", () => {
+      const config = this.toolSystem.getConfig();
+      config.kButton = "blaster";
+      this.toolSystem.setConfig(config);
+      this.updateToolConfigDisplay();
+    });
+
+    this.inputManager.onKeyDown("Digit4", () => {
+      const config = this.toolSystem.getConfig();
+      config.kButton = "none";
+      this.toolSystem.setConfig(config);
+      this.updateToolConfigDisplay();
+    });
+  }
+
+  private setupToolConfigDisplay(): void {
+    this.toolConfigElement = document.createElement("div");
+    this.toolConfigElement.id = "tool-config";
+    this.toolConfigElement.style.cssText = `
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: monospace;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 3px;
+      z-index: 1000;
+    `;
+    this.updateToolConfigDisplay();
+    document.body.appendChild(this.toolConfigElement);
+  }
+
+  private updateToolConfigDisplay(): void {
+    if (this.toolConfigElement) {
+      this.toolConfigElement.textContent =
+        this.toolSystem.getToolConfigDisplay();
+    }
   }
 
   private gameLoop(time: { deltaTime: number }): void {
@@ -124,21 +182,26 @@ export class Game {
       this.player.stopCharging();
     }
 
-    // Handle shooting input
-    if (this.shootCooldown > 0) {
-      this.shootCooldown -= deltaTime;
+    // Handle tool input (J and K buttons)
+    if (
+      this.inputManager.isJToolPressed() &&
+      this.energySystem.getCurrent() > 0
+    ) {
+      const toolPos = this.player.getBulletSpawnPosition();
+      const direction = this.player.getFacingDirection();
+      if (this.toolSystem.useJTool(toolPos, direction)) {
+        this.energySystem.consumeTool(this.toolSystem.getJToolName());
+      }
     }
 
     if (
-      this.inputManager.isShooting() &&
-      this.shootCooldown <= 0 &&
+      this.inputManager.isKToolPressed() &&
       this.energySystem.getCurrent() > 0
     ) {
-      if (this.energySystem.consumeShooting()) {
-        const bulletPos = this.player.getBulletSpawnPosition();
-        const direction = this.player.getFacingDirection();
-        this.bulletSystem.shoot(bulletPos, direction);
-        this.shootCooldown = 10; // Shooting cooldown in frames
+      const toolPos = this.player.getBulletSpawnPosition();
+      const direction = this.player.getFacingDirection();
+      if (this.toolSystem.useKTool(toolPos, direction)) {
+        this.energySystem.consumeTool(this.toolSystem.getKToolName());
       }
     }
 
@@ -151,10 +214,10 @@ export class Game {
     this.player.updatePhysics(deltaTime);
     this.collisionSystem.checkCollisions(this.player);
     this.enemySystem.update(deltaTime);
-    this.bulletSystem.update(deltaTime);
+    this.toolSystem.update(deltaTime);
 
-    // Check bullet-enemy collisions
-    const hitEnemies = this.bulletSystem.checkEnemyCollisions(
+    // Check tool-enemy collisions
+    const hitEnemies = this.toolSystem.checkEnemyCollisions(
       this.enemySystem.getEnemies(),
     );
     if (hitEnemies.length > 0) {
@@ -190,9 +253,8 @@ export class Game {
     this.player.reset();
     this.energySystem.reset();
     this.enemySystem.reset();
-    this.bulletSystem.reset();
+    this.toolSystem.reset();
     this.enemyCollisionCooldown = 0; // Reset cooldown timer
-    this.shootCooldown = 0; // Reset shoot cooldown timer
   }
 
   getApp(): Application {
