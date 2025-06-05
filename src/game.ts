@@ -3,6 +3,7 @@ import { Player } from "./player";
 import { PlatformSystem, platformGrid } from "./platform-system";
 import { EnergySystem } from "./energy-system";
 import { EnemySystem } from "./enemy-system";
+import { BulletSystem } from "./bullet-system";
 import { CollisionSystem } from "./collision-system";
 import { InputManager } from "./input-manager";
 import { Renderer } from "./renderer";
@@ -14,10 +15,12 @@ export class Game {
   private platformSystem: PlatformSystem;
   private energySystem: EnergySystem;
   private enemySystem: EnemySystem;
+  private bulletSystem: BulletSystem;
   private collisionSystem: CollisionSystem;
   private inputManager: InputManager;
   private renderer: Renderer;
   private enemyCollisionCooldown: number = 0; // Cooldown timer for enemy collisions
+  private shootCooldown: number = 0; // Cooldown timer for shooting
 
   constructor() {
     this.app = new Application();
@@ -32,6 +35,7 @@ export class Game {
     this.energySystem = new EnergySystem();
     this.enemySystem = new EnemySystem(this.platformSystem);
     this.collisionSystem = new CollisionSystem(this.platformSystem);
+    this.bulletSystem = new BulletSystem();
   }
 
   async init(): Promise<void> {
@@ -57,6 +61,7 @@ export class Game {
     this.app.stage.addChild(this.renderer.getPlatformsContainer());
     this.app.stage.addChild(this.energySystem.getGraphics());
     this.app.stage.addChild(this.enemySystem.getContainer());
+    this.app.stage.addChild(this.bulletSystem.getContainer());
 
     // Render platforms
     this.renderer.renderPlatforms(this.platformSystem);
@@ -115,6 +120,24 @@ export class Game {
       this.player.stopCharging();
     }
 
+    // Handle shooting input
+    if (this.shootCooldown > 0) {
+      this.shootCooldown -= deltaTime;
+    }
+
+    if (
+      this.inputManager.isShooting() &&
+      this.shootCooldown <= 0 &&
+      this.energySystem.getCurrent() > 0
+    ) {
+      if (this.energySystem.consumeShooting()) {
+        const bulletPos = this.player.getBulletSpawnPosition();
+        const direction = this.player.getFacingDirection();
+        this.bulletSystem.shoot(bulletPos, direction);
+        this.shootCooldown = 10; // Shooting cooldown in frames
+      }
+    }
+
     // Consume energy for movement
     if (isMoving && Math.abs(physics.velocity.x) > 0.1) {
       this.energySystem.consumeMovement(deltaTime);
@@ -124,6 +147,15 @@ export class Game {
     this.player.updatePhysics(deltaTime);
     this.collisionSystem.checkCollisions(this.player);
     this.enemySystem.update(deltaTime);
+    this.bulletSystem.update(deltaTime);
+
+    // Check bullet-enemy collisions
+    const hitEnemies = this.bulletSystem.checkEnemyCollisions(
+      this.enemySystem.getEnemies()
+    );
+    if (hitEnemies.length > 0) {
+      this.enemySystem.removeEnemies(hitEnemies);
+    }
 
     // Update enemy collision cooldown
     if (this.enemyCollisionCooldown > 0) {
@@ -154,7 +186,9 @@ export class Game {
     this.player.reset();
     this.energySystem.reset();
     this.enemySystem.reset();
+    this.bulletSystem.reset();
     this.enemyCollisionCooldown = 0; // Reset cooldown timer
+    this.shootCooldown = 0; // Reset shoot cooldown timer
   }
 
   getApp(): Application {

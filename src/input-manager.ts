@@ -34,6 +34,10 @@ export class InputManager {
     return this.isKeyPressed("KeyS") || this.isKeyPressed("ArrowDown");
   }
 
+  isShooting(): boolean {
+    return this.isKeyPressed("KeyZ") || this.isKeyPressed("KeyJ");
+  }
+
   onKeyDown(keyCode: string, callback: () => void): void {
     const event = `keydown:${keyCode}`;
     if (!this.callbacks[event]) {

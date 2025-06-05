@@ -26,6 +26,7 @@ export const ENERGY_CONFIG = {
     movement: 0.05,
     charging: 0.1,
     enemyCollision: 10,
+    shooting: 5, // Energy cost per bullet
   },
 };
 
@@ -38,6 +39,7 @@ export const COLORS = {
   },
   platform: 0x00ff00,
   enemy: 0xff8800, // Orange color for enemies
+  bullet: 0x00ffff, // Cyan color for bullets
   energy: {
     high: 0x00ff00,
     medium: 0xffff00,

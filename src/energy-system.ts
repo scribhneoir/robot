@@ -50,6 +50,13 @@ export class EnergySystem {
     return this.energy.current > 0;
   }
 
+  consumeShooting(): boolean {
+    if (this.energy.current < ENERGY_CONFIG.costs.shooting) return false;
+    this.energy.current -= ENERGY_CONFIG.costs.shooting;
+    this.clampEnergy();
+    return true;
+  }
+
   reset(): void {
     this.energy.current = this.energy.max;
     this.updateVisual();

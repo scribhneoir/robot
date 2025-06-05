@@ -72,4 +72,14 @@ export class EnemySystem {
   getEnemies(): Enemy[] {
     return [...this.enemies];
   }
+
+  removeEnemies(enemiesToRemove: Enemy[]): void {
+    for (const enemyToRemove of enemiesToRemove) {
+      const index = this.enemies.indexOf(enemyToRemove);
+      if (index !== -1) {
+        this.container.removeChild(enemyToRemove.getGraphics());
+        this.enemies.splice(index, 1);
+      }
+    }
+  }
 }

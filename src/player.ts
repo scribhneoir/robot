@@ -8,6 +8,7 @@ export class Player {
   private physics: Physics;
   private spawnPosition: Vector2;
   private isBlinking: boolean = false;
+  private facingDirection: "left" | "right" = "right"; // Track facing direction
 
   constructor(spawnX: number, spawnY: number) {
     this.spawnPosition = { x: spawnX, y: spawnY };
@@ -40,6 +41,19 @@ export class Player {
 
   getPhysics(): Physics {
     return { ...this.physics };
+  }
+
+  getFacingDirection(): "left" | "right" {
+    return this.facingDirection;
+  }
+
+  getBulletSpawnPosition(): Vector2 {
+    // Spawn bullet from the center-front of the player
+    const offset = this.facingDirection === "right" ? 8 : -2;
+    return {
+      x: this.position.x + offset,
+      y: this.position.y + 4, // Center vertically
+    };
   }
 
   setPosition(x: number, y: number): void {
@@ -81,6 +95,7 @@ export class Player {
         ? -this.physics.acceleration
         : this.physics.acceleration;
     this.physics.velocity.x += acceleration * deltaTime;
+    this.facingDirection = direction; // Update facing direction
   }
 
   startCharging(deltaTime: number): void {

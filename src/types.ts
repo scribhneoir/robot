@@ -23,6 +23,7 @@ export interface Energy {
   costs: {
     movement: number;
     charging: number;
+    shooting?: number; // Optional for backward compatibility
   };
 }
 
