@@ -108,6 +108,13 @@ export class Player {
     this.physics.chargeTime = 0;
   }
 
+  isFullyCharged(): boolean {
+    return (
+      this.physics.isCharging &&
+      this.physics.chargeTime === this.physics.maxChargeTime
+    );
+  }
+
   setOnGround(onGround: boolean): void {
     this.physics.onGround = onGround;
     if (!onGround) {

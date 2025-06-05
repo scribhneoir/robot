@@ -2,6 +2,7 @@ import { Application } from "pixi.js";
 import { Player } from "./player";
 import { PlatformSystem, platformGrid } from "./platform-system";
 import { EnergySystem } from "./energy-system";
+import { EnemySystem } from "./enemy-system";
 import { CollisionSystem } from "./collision-system";
 import { InputManager } from "./input-manager";
 import { Renderer } from "./renderer";
@@ -12,6 +13,7 @@ export class Game {
   private player: Player;
   private platformSystem: PlatformSystem;
   private energySystem: EnergySystem;
+  private enemySystem: EnemySystem;
   private collisionSystem: CollisionSystem;
   private inputManager: InputManager;
   private renderer: Renderer;
@@ -27,6 +29,7 @@ export class Game {
     this.player = new Player(spawnPos.x, spawnPos.y);
 
     this.energySystem = new EnergySystem();
+    this.enemySystem = new EnemySystem(this.platformSystem);
     this.collisionSystem = new CollisionSystem(this.platformSystem);
   }
 
@@ -52,6 +55,7 @@ export class Game {
     this.app.stage.addChild(this.player.getGraphics());
     this.app.stage.addChild(this.renderer.getPlatformsContainer());
     this.app.stage.addChild(this.energySystem.getGraphics());
+    this.app.stage.addChild(this.enemySystem.getContainer());
 
     // Render platforms
     this.renderer.renderPlatforms(this.platformSystem);
@@ -96,7 +100,10 @@ export class Game {
       this.energySystem.getCurrent() > 0
     ) {
       this.player.startCharging(deltaTime);
-      if (!this.energySystem.consumeCharging(deltaTime)) {
+      if (!this.player.isFullyCharged()) {
+        this.energySystem.consumeCharging(deltaTime);
+      }
+      if (this.energySystem.getCurrent() === 0) {
         this.player.stopCharging();
       }
     } else if (physics.isCharging && physics.onGround) {
@@ -115,6 +122,13 @@ export class Game {
     // Update systems
     this.player.updatePhysics(deltaTime);
     this.collisionSystem.checkCollisions(this.player);
+    this.enemySystem.update(deltaTime);
+
+    // Check player-enemy collisions
+    if (this.enemySystem.checkPlayerCollisions(this.player.getPosition())) {
+      this.resetGame(); // Reset game if player hits enemy
+    }
+
     this.player.updateVisual();
     this.energySystem.updateVisual();
   }
@@ -122,6 +136,7 @@ export class Game {
   private resetGame(): void {
     this.player.reset();
     this.energySystem.reset();
+    this.enemySystem.reset();
   }
 
   getApp(): Application {

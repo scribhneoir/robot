@@ -35,6 +35,7 @@ export const COLORS = {
     maxCharge: 0xffffff,
   },
   platform: 0x00ff00,
+  enemy: 0xff8800, // Orange color for enemies
   energy: {
     high: 0x00ff00,
     medium: 0xffff00,
