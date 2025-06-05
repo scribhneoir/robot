@@ -31,7 +31,7 @@ export const ENERGY_CONFIG = {
 };
 
 export const COLORS = {
-  background: 0x000000,
+  background: 0x222222,
   player: {
     normal: 0xff0000,
     charging: 0xffff00,
